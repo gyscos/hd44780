@@ -1,6 +1,5 @@
+use commands::{Command, TextDirection, Direction, LineCount, CharacterGrid};
 use gpio::{Pin, PinGroup};
-
-use commands::*;
 
 pub struct Driver<RS, RW, Data, Sleep>
     where RS: Pin,
@@ -107,6 +106,8 @@ impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
     ///   Counter will blink.
     pub fn control_display(&mut self, display: bool, cursor: bool,
                            blinking: bool) {
+        use commands::{show_display, show_blinking, show_cursor};
+
         let d = show_display(display);
         let c = show_cursor(cursor);
         let b = show_blinking(blinking);
@@ -128,6 +129,8 @@ impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
 
     pub fn set_function(&mut self, lines: LineCount,
                         characters: CharacterGrid) {
+        use commands::line_count;
+
         let dl = line_count(Data::is_8_bit());
         let n = lines as u8;
         let f = characters as u8;
@@ -137,6 +140,8 @@ impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
     }
 
     pub fn set_cgram_address(&mut self, addr: u8) {
+        use commands::cgram_mask;
+
         self.rs.low();
         self.write(Command::SetCgramAddr as u8 | cgram_mask(addr));
     }
