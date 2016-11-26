@@ -1,5 +1,5 @@
 [package]
-name = "hd44780"
+name = "lcd_hd44780"
 version = "0.1.0"
 authors = ["Alexandre Bury <alexandre.bury@gmail.com>"]
 
