@@ -1,5 +1,7 @@
 use gpio::{Pin, PinGroup};
 
+use commands::*;
+
 pub struct Driver<RS, RW, Data, Sleep>
     where RS: Pin,
           RW: Pin,
@@ -10,30 +12,6 @@ pub struct Driver<RS, RW, Data, Sleep>
     rw: RW,
     data: Data,
     sleep: Sleep,
-}
-
-#[repr(u8)]
-pub enum TextDirection {
-    RightToLeft = 0,
-    LeftToRight = 1,
-}
-
-#[repr(u8)]
-pub enum Direction {
-    Left = 0,
-    Right = 1,
-}
-
-#[repr(u8)]
-pub enum LineCount {
-    One = 0,
-    Two = 1,
-}
-
-#[repr(u8)]
-pub enum CharacterGrid {
-    C5x8 = 0,
-    C5x11 = 1,
 }
 
 impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
@@ -92,14 +70,14 @@ impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
 
     pub fn clear_display(&mut self) {
         self.rs.low();
-        self.write(0b00000001);
+        self.write(Command::ClearDisplay as u8);
         // This method is slower than most.
         (self.sleep)(2000);
     }
 
     pub fn return_home(&mut self) {
         self.rs.low();
-        self.write(0b00000010);
+        self.write(Command::ReturnHome as u8);
         // This method is slower than most.
         (self.sleep)(2000);
     }
@@ -113,11 +91,11 @@ impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
     /// as well as the address pointer (in the same direction).
     pub fn set_entry_mode(&mut self, text_direction: TextDirection,
                           auto_shift_display: bool) {
-        let id = (text_direction as u8) << 1;
+        let id = text_direction as u8;
         let sh = auto_shift_display as u8;
 
         self.rs.low();
-        self.write(0b00000100 | id | sh);
+        self.write(Command::SetEntryMode as u8 | id | sh);
     }
 
     /// Controls what appears on the LCD.
@@ -129,43 +107,43 @@ impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
     ///   Counter will blink.
     pub fn control_display(&mut self, display: bool, cursor: bool,
                            blinking: bool) {
-        let d = (display as u8) << 2;
-        let c = (cursor as u8) << 1;
-        let b = blinking as u8;
+        let d = show_display(display);
+        let c = show_cursor(cursor);
+        let b = show_blinking(blinking);
         self.rs.low();
-        self.write(0b00001000 | d | c | b);
+        self.write(Command::ControlDisplay as u8 | d | c | b);
     }
 
     pub fn shift_display(&mut self, direction: Direction) {
-        let rl = (direction as u8) << 2;
+        let rl = direction as u8;
         self.rs.low();
-        self.write(0b00011000 | rl);
+        self.write(Command::ShiftDisplay as u8 | rl);
     }
 
     pub fn shift_cursor(&mut self, direction: Direction) {
-        let rl = (direction as u8) << 2;
+        let rl = direction as u8;
         self.rs.low();
-        self.write(0b00010000 | rl);
+        self.write(Command::ShiftCursor as u8 | rl);
     }
 
     pub fn set_function(&mut self, lines: LineCount,
                         characters: CharacterGrid) {
-        let dl = (Data::is_8_bit() as u8) << 4;
-        let n = (lines as u8) << 3;
-        let f = (characters as u8) << 2;
+        let dl = line_count(Data::is_8_bit());
+        let n = lines as u8;
+        let f = characters as u8;
 
         self.rs.low();
-        self.write(0b00100000 | dl | n | f);
+        self.write(Command::SetFunction as u8 | dl | n | f);
     }
 
     pub fn set_cgram_address(&mut self, addr: u8) {
         self.rs.low();
-        self.write(0b01000000 | (addr & 0b00111111));
+        self.write(Command::SetCgramAddr as u8 | cgram_mask(addr));
     }
 
     pub fn set_ddram_address(&mut self, addr: u8) {
         self.rs.low();
-        self.write(0b10000000 | addr);
+        self.write(Command::SetDdramAddr as u8 | addr);
     }
 
     pub fn write_data(&mut self, data: u8) {
