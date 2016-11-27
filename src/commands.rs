@@ -32,6 +32,13 @@ impl TextDirection {
             TextDirection::RightToLeft
         }
     }
+
+    pub fn direction(&self) -> Direction {
+        match *self {
+            TextDirection::LeftToRight => Direction::Left,
+            TextDirection::RightToLeft => Direction::Right,
+        }
+    }
 }
 
 #[repr(u8)]
