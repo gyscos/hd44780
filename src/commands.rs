@@ -1,3 +1,4 @@
+#[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum Command {
     ClearDisplay = 1,
@@ -12,6 +13,7 @@ pub enum Command {
 }
 
 /// Specifies where to move the pointer after writing/reading data.
+#[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum TextDirection {
     /// Decrement the pointer after reading/writing.
@@ -41,6 +43,7 @@ impl TextDirection {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum Direction {
     Left = 0,
@@ -55,8 +58,16 @@ impl Direction {
             Direction::Left
         }
     }
+
+    pub fn switch(self) -> Self {
+        match self {
+            Direction::Left => Direction::Right,
+            Direction::Right => Direction::Left,
+        }
+    }
 }
 
+#[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum LineCount {
     One = 0,
@@ -73,6 +84,7 @@ impl LineCount {
     }
 }
 
+#[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum CharacterGrid {
     C5x8 = 0,
