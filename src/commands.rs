@@ -24,10 +24,30 @@ pub enum TextDirection {
     LeftToRight = 1 << 1,
 }
 
+impl TextDirection {
+    pub fn from_u8(data: u8) -> Self {
+        if (data & TextDirection::LeftToRight as u8) != 0 {
+            TextDirection::LeftToRight
+        } else {
+            TextDirection::RightToLeft
+        }
+    }
+}
+
 #[repr(u8)]
 pub enum Direction {
     Left = 0,
     Right = 1 << 2,
+}
+
+impl Direction {
+    pub fn from_u8(data: u8) -> Self {
+        if (data & Direction::Right as u8) != 0 {
+            Direction::Right
+        } else {
+            Direction::Left
+        }
+    }
 }
 
 #[repr(u8)]
@@ -36,12 +56,31 @@ pub enum LineCount {
     Two = 1 << 3,
 }
 
+impl LineCount {
+    pub fn from_u8(data: u8) -> Self {
+        if (data & LineCount::Two as u8) != 0 {
+            LineCount::Two
+        } else {
+            LineCount::One
+        }
+    }
+}
+
 #[repr(u8)]
 pub enum CharacterGrid {
     C5x8 = 0,
     C5x11 = 1 << 2,
 }
 
+impl CharacterGrid {
+    pub fn from_u8(data: u8) -> Self {
+        if (data & CharacterGrid::C5x11 as u8) != 0 {
+            CharacterGrid::C5x11
+        } else {
+            CharacterGrid::C5x8
+        }
+    }
+}
 pub fn show_display(display: bool) -> u8 {
     (display as u8) << 2
 }
