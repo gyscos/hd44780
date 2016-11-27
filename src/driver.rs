@@ -1,29 +1,29 @@
 use commands::{Command, TextDirection, Direction, LineCount, CharacterGrid};
-use gpio::{Pin, PinGroup};
+use gpio::{Pin, PinGroup, Sleep};
 
-pub struct Driver<RS, RW, Data, Sleep>
+pub struct Driver<RS, RW, Data, SleepFn>
     where RS: Pin,
           RW: Pin,
           Data: PinGroup,
-          Sleep: Fn(usize)
+          SleepFn: Sleep,
 {
     rs: RS,
     rw: RW,
     data: Data,
-    sleep: Sleep,
+    sleep: SleepFn,
 }
 
-impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
+impl<RS, RW, Data, SleepFn> Driver<RS, RW, Data, SleepFn>
     where RS: Pin,
           RW: Pin,
           Data: PinGroup,
-          Sleep: Fn(usize)
+          SleepFn: Sleep,
 {
     /// Creates a new driver using the given pins.
     ///
     /// * `rw` can be a dummy pin. In that case, be sure to connect it to LOW.
     /// * `data` can be either 4-pins or 8-pins.
-    pub fn new(rs: RS, rw: RW, data: Data, sleep: Sleep) -> Self {
+    pub fn new(rs: RS, rw: RW, data: Data, sleep: SleepFn) -> Self {
 
         let mut driver = Driver {
             rs: rs,
@@ -71,14 +71,14 @@ impl<RS, RW, Data, Sleep> Driver<RS, RW, Data, Sleep>
         self.rs.low();
         self.write(Command::ClearDisplay as u8);
         // This method is slower than most.
-        (self.sleep)(2000);
+        self.sleep.sleep(2000);
     }
 
     pub fn return_home(&mut self) {
         self.rs.low();
         self.write(Command::ReturnHome as u8);
         // This method is slower than most.
-        (self.sleep)(2000);
+        self.sleep.sleep(2000);
     }
 
     /// Sets what happens when data is written or read from the ddram.

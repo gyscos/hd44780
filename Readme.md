@@ -1,4 +1,5 @@
 A rust library to controll LCD modules based on the [Hitachi HD44780].
+This will also work with compatible controllers, like the Samsung KS0066.
 
 Those often have 2 lines of 16 characters.
 

@@ -11,9 +11,16 @@ pub enum Command {
     SetDdramAddr = 1 << 7,
 }
 
+/// Specifies where to move the pointer after writing/reading data.
 #[repr(u8)]
 pub enum TextDirection {
+    /// Decrement the pointer after reading/writing.
+    ///
+    /// This means the next character will be to the left.
     RightToLeft = 0,
+    /// Increment the pointer after reading/writing.
+    ///
+    /// This means the next character will be to the right.
     LeftToRight = 1 << 1,
 }
 

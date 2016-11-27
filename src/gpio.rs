@@ -1,3 +1,14 @@
+pub trait Sleep {
+    fn sleep(&self, ms: usize);
+}
+
+
+impl <F> Sleep for F where F: Fn(usize) {
+    fn sleep(&self, ms: usize) {
+        self(ms)
+    }
+}
+
 pub trait Pin {
     fn high(&mut self);
     fn low(&mut self);
@@ -11,8 +22,8 @@ impl Pin for DummyPin {
 }
 
 pub trait PinGroup {
-    fn write<F: Fn(usize)>(&mut self, data: u8, sleep: &F);
-    fn write_u4<F: Fn(usize)>(&mut self, data: u8, sleep: &F);
+    fn write<F: Sleep>(&mut self, data: u8, sleep: &F);
+    fn write_u4<F: Sleep>(&mut self, data: u8, sleep: &F);
     fn is_8_bit() -> bool;
 }
 
@@ -27,17 +38,17 @@ macro_rules! write_bit {
 }
 
 impl<P: Pin, E: Pin> PinGroup for ([P; 8], E) {
-    fn write<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write<F: Sleep>(&mut self, data: u8, sleep: &F) {
         for i in 0..8 {
             write_bit!(data & (1 << i) => self.0[i]);
         }
         self.1.high();
-        sleep(1);
+        sleep.sleep(1);
         self.1.low();
-        sleep(100);
+        sleep.sleep(100);
     }
 
-    fn write_u4<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write_u4<F: Sleep>(&mut self, data: u8, sleep: &F) {
         self.write(data << 4, sleep);
     }
 
@@ -45,18 +56,18 @@ impl<P: Pin, E: Pin> PinGroup for ([P; 8], E) {
 }
 
 impl<P: Pin, E: Pin> PinGroup for ([P; 4], E) {
-    fn write_u4<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write_u4<F: Sleep>(&mut self, data: u8, sleep: &F) {
         self.1.low();
         for i in 0..4 {
             write_bit!(data & (1 << i) => self.0[i]);
         }
         self.1.high();
-        sleep(1);
+        sleep.sleep(1);
         self.1.low();
-        sleep(100);
+        sleep.sleep(100);
     }
 
-    fn write<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write<F: Sleep>(&mut self, data: u8, sleep: &F) {
 
         self.write_u4(data >> 4, sleep);
         self.write_u4(data, sleep);
@@ -77,7 +88,7 @@ impl<P0, P1, P2, P3, P4, P5, P6, P7, E> PinGroup
           P7: Pin,
           E: Pin,
 {
-    fn write<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write<F: Sleep>(&mut self, data: u8, sleep: &F) {
         write_bit!(data & (1 << 0) => (self.0).0);
         write_bit!(data & (1 << 1) => (self.0).1);
         write_bit!(data & (1 << 2) => (self.0).2);
@@ -87,12 +98,12 @@ impl<P0, P1, P2, P3, P4, P5, P6, P7, E> PinGroup
         write_bit!(data & (1 << 6) => (self.0).6);
         write_bit!(data & (1 << 7) => (self.0).7);
         self.1.high();
-        sleep(1);
+        sleep.sleep(1);
         self.1.low();
-        sleep(100);
+        sleep.sleep(100);
     }
 
-    fn write_u4<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write_u4<F: Sleep>(&mut self, data: u8, sleep: &F) {
         self.write(data << 4, sleep);
     }
 
@@ -107,18 +118,18 @@ impl<P4, P5, P6, P7, E> PinGroup
           P7: Pin,
           E: Pin,
 {
-    fn write_u4<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write_u4<F: Sleep>(&mut self, data: u8, sleep: &F) {
         write_bit!(data & (1 << 0) => (self.0).0);
         write_bit!(data & (1 << 1) => (self.0).1);
         write_bit!(data & (1 << 2) => (self.0).2);
         write_bit!(data & (1 << 3) => (self.0).3);
         self.1.high();
-        sleep(1);
+        sleep.sleep(1);
         self.1.low();
-        sleep(100);
+        sleep.sleep(100);
     }
 
-    fn write<F: Fn(usize)>(&mut self, data: u8, sleep: &F) {
+    fn write<F: Sleep>(&mut self, data: u8, sleep: &F) {
         self.write_u4(data >> 4, sleep);
         self.write_u4(data, sleep);
     }
