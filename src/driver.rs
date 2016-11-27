@@ -156,6 +156,13 @@ impl<RS, RW, Data, SleepFn> Driver<RS, RW, Data, SleepFn>
         self.write(data);
     }
 
+    pub fn write_slice(&mut self, data: &[u8]) {
+        self.rs.high();
+
+        for &byte in data {
+            self.write(byte);
+        }
+    }
 
     // Let's not expose any read method, it's easier this way.
     //
