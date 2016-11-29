@@ -164,6 +164,21 @@ impl<RS, RW, Data, SleepFn> Driver<RS, RW, Data, SleepFn>
         }
     }
 
+    pub fn define_glyph(&mut self, glyph_id: u8, data: &[u8]) {
+        // TODO: check data length, compare it to font size
+        self.set_cgram_address(glyph_id << 3);
+        self.write_slice(data);
+    }
+
+    pub fn write_at(&mut self, (row, col): (u8, u8), data: &[u8]) {
+        self.set_ddram_address(col + row * 0x40);
+        self.write_slice(data);
+    }
+
+    pub fn set_cursor(&mut self, (row, col): (u8, u8)) {
+        self.set_ddram_address(col + row * 0x40);
+    }
+
     // Let's not expose any read method, it's easier this way.
     //
     // pub fn read_data(&mut self) -> u8 { 0 }
