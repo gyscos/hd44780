@@ -1,24 +1,13 @@
+use gpio_traits::pin;
+
 pub trait Sleep {
     fn sleep(&self, ms: usize);
 }
-
 
 impl <F> Sleep for F where F: Fn(usize) {
     fn sleep(&self, ms: usize) {
         self(ms)
     }
-}
-
-pub trait Pin {
-    fn high(&mut self);
-    fn low(&mut self);
-}
-
-pub struct DummyPin;
-
-impl Pin for DummyPin {
-    fn high(&mut self) {}
-    fn low(&mut self) {}
 }
 
 pub trait PinGroup {
@@ -37,7 +26,7 @@ macro_rules! write_bit {
     }
 }
 
-impl<P: Pin, E: Pin> PinGroup for ([P; 8], E) {
+impl<P: pin::Output, E: pin::Output> PinGroup for ([P; 8], E) {
     fn write<F: Sleep>(&mut self, data: u8, sleep: &F) {
         for i in 0..8 {
             write_bit!(data & (1 << i) => self.0[i]);
@@ -55,7 +44,7 @@ impl<P: Pin, E: Pin> PinGroup for ([P; 8], E) {
     fn is_8_bit() -> bool { true }
 }
 
-impl<P: Pin, E: Pin> PinGroup for ([P; 4], E) {
+impl<P: pin::Output, E: pin::Output> PinGroup for ([P; 4], E) {
     fn write_u4<F: Sleep>(&mut self, data: u8, sleep: &F) {
         self.1.low();
         for i in 0..4 {
@@ -78,15 +67,15 @@ impl<P: Pin, E: Pin> PinGroup for ([P; 4], E) {
 
 impl<P0, P1, P2, P3, P4, P5, P6, P7, E> PinGroup
     for ((P0, P1, P2, P3, P4, P5, P6, P7), E)
-    where P0: Pin,
-          P1: Pin,
-          P2: Pin,
-          P3: Pin,
-          P4: Pin,
-          P5: Pin,
-          P6: Pin,
-          P7: Pin,
-          E: Pin,
+    where P0: pin::Output,
+          P1: pin::Output,
+          P2: pin::Output,
+          P3: pin::Output,
+          P4: pin::Output,
+          P5: pin::Output,
+          P6: pin::Output,
+          P7: pin::Output,
+          E: pin::Output,
 {
     fn write<F: Sleep>(&mut self, data: u8, sleep: &F) {
         write_bit!(data & (1 << 0) => (self.0).0);
@@ -112,11 +101,11 @@ impl<P0, P1, P2, P3, P4, P5, P6, P7, E> PinGroup
 
 impl<P4, P5, P6, P7, E> PinGroup
     for ((P4, P5, P6, P7), E)
-    where P4: Pin,
-          P5: Pin,
-          P6: Pin,
-          P7: Pin,
-          E: Pin,
+    where P4: pin::Output,
+          P5: pin::Output,
+          P6: pin::Output,
+          P7: pin::Output,
+          E: pin::Output,
 {
     fn write_u4<F: Sleep>(&mut self, data: u8, sleep: &F) {
         write_bit!(data & (1 << 0) => (self.0).0);

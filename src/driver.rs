@@ -1,9 +1,10 @@
+use gpio_traits::pin;
 use commands::{Command, TextDirection, Direction, LineCount, CharacterGrid};
-use gpio::{Pin, PinGroup, Sleep};
+use gpio::{PinGroup, Sleep};
 
 pub struct Driver<RS, RW, Data, SleepFn>
-    where RS: Pin,
-          RW: Pin,
+    where RS: pin::Output,
+          RW: pin::Output,
           Data: PinGroup,
           SleepFn: Sleep,
 {
@@ -14,8 +15,8 @@ pub struct Driver<RS, RW, Data, SleepFn>
 }
 
 impl<RS, RW, Data, SleepFn> Driver<RS, RW, Data, SleepFn>
-    where RS: Pin,
-          RW: Pin,
+    where RS: pin::Output,
+          RW: pin::Output,
           Data: PinGroup,
           SleepFn: Sleep,
 {

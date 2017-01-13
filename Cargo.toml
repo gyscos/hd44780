@@ -4,3 +4,7 @@ version = "0.1.0"
 authors = ["Alexandre Bury <alexandre.bury@gmail.com>"]
 
 [dependencies]
+gpio_traits = { git = "https://github.com/gyscos/gpio_traits"}
+
+[dev-dependencies]
+gpio_traits = { git = "https://github.com/gyscos/gpio_traits", features = ["debug"]}
