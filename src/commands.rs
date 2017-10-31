@@ -1,3 +1,9 @@
+//! Command codes for low-level communication.
+//!
+//! This module defines the various codes used to communicate with the LCD
+//! display.
+
+/// One of the command codes.
 #[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum Command {
@@ -67,6 +73,7 @@ impl Direction {
     }
 }
 
+/// Number of character lines.
 #[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum LineCount {
@@ -84,6 +91,7 @@ impl LineCount {
     }
 }
 
+/// Pixel size for the characters.
 #[derive(Clone, Copy, Debug)]
 #[repr(u8)]
 pub enum CharacterGrid {
@@ -100,6 +108,7 @@ impl CharacterGrid {
         }
     }
 }
+
 pub fn show_display(display: bool) -> u8 {
     (display as u8) << 2
 }
