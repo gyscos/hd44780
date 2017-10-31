@@ -2,7 +2,7 @@ extern crate gpio_traits;
 extern crate lcd_hd44780;
 
 use gpio_traits::pin;
-use lcd_hd44780::driver::Driver;
+use lcd_hd44780::Driver;
 
 struct StdoutPin {
     name: String,
@@ -42,9 +42,9 @@ fn main() {
     let d8 = StdoutPin::new("d8");
 
     let sleep =
-        |us| std::thread::sleep(std::time::Duration::new(0, 1000 * us as u32));
+        |us| std::thread::sleep(std::time::Duration::new(0, 1000 * us));
 
-    let mut driver = lcd_hd44780::driver::PinDriver::new(
+    let mut driver = lcd_hd44780::PinDriver::new(
         rs,
         rw,
         ([d1, d2, d3, d4, d5, d6, d7, d8], e),

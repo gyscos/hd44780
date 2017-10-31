@@ -149,6 +149,10 @@ where
         self.data.write(data, &mut self.sleep);
     }
 
+    pub fn sleep(&mut self, us: u32) {
+        self.sleep.sleep(us);
+    }
+
     fn initialize_bits(&mut self) {
         // We don't know what mode the module is in.
         // (It could be either in 4-bits or in 8-bits mode)

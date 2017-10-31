@@ -3,14 +3,14 @@ use gpio_traits::pin;
 /// Trait for a sleep function.
 pub trait Sleep {
     /// Wait for the given number of microseconds.
-    fn sleep(&mut self, us: usize);
+    fn sleep(&mut self, us: u32);
 }
 
 impl<F> Sleep for F
 where
-    F: FnMut(usize),
+    F: FnMut(u32),
 {
-    fn sleep(&mut self, us: usize) {
+    fn sleep(&mut self, us: u32) {
         self(us)
     }
 }
